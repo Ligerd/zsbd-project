@@ -11,40 +11,35 @@ create table aircompany(
 
 create table plane(
     plane_id int not null auto_increment,
+    aircompany int not null,
     model varchar(30) not null,
     number_of_seats int not null,
     engine varchar(15) not null,
-    plane_usage varchar(15), 
-    primary key (plane_id)
+    -- plane_usage varchar(15),
+    board_number varchar(15) not null, 
+    primary key (plane_id),
+    foreign key (aircompany) references aircompany (aircompany_id)
 );    
 
-create table board (
-    board_id int not null auto_increment,
-    plane_id int not null,
-    aircompany_id int not null,
-    board_number varchar(15) not null,   
-    primary key (board_id),
-    foreign key (plane_id) references plane (plane_id),
-    foreign key (aircompany_id) references aircompany (aircompany_id)
-);
-
-create table city (
-    city_id int not null auto_increment,
-    city_name varchar(15),
-    primary key (city_id)
-);
+-- create table board (
+--     board_id int not null auto_increment,
+--     plane_id int not null,
+--     aircompany_id int not null,
+--     board_number varchar(15) not null,   
+--     primary key (board_id),
+--     foreign key (plane_id) references plane (plane_id),
+--     foreign key (aircompany_id) references aircompany (aircompany_id)
+-- );
 
 create table airport(
     airport_id int not null auto_increment,
-    city int,
+    city varchar(15),
     airport_name varchar(50) not null,
-    primary key (airport_id),
-    foreign key (city) references city(city_id)
+    primary key (airport_id)
 );
 
 create table airRoute (
     airRoute_id int not null auto_increment,
-    aircompany_id int,
     plane_id int,
     departures_airport int,
     arrivals_airport int,
@@ -54,14 +49,24 @@ create table airRoute (
     foreign key (arrivals_airport) references airport (airport_id)
 );
 
+create table pilot(
+    pilot_id int not null auto_increment,
+    pilot_name varchar(15),
+    pilot_surname varchar(15),
+    primary key (pilot_id)  
+);
+
 create table flight (
     flight_date date not null,
-    route_id int,
-    board int,
+    route_id int not null,
+    -- board int,
+    pilot int,
     primary key (flight_date),
-    foreign key (route_id) references airRoute (airRoute_id),
-    foreign key (board) references board (board_id)
+    foreign key (pilot) references pilot (pilot_id),
+    foreign key (route_id) references airRoute (airRoute_id)
+    -- foreign key (board) references board (board_id)
 );
+
 
 
 create table passenger (
