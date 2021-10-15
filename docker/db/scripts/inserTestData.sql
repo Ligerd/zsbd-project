@@ -85,4 +85,11 @@ insert into ticket(passenger, tariff, flight_date) values(5,5,'2021-06-21');
 
 CREATE USER 'readonly'@'%' IDENTIFIED BY 'readonly';
 GRANT SELECT ON *.* TO 'readonly'@'%';
+
+FLUSH PRIVILEGES;
+
+CREATE USER 'readinsert'@'%' IDENTIFIED BY 'readinsert';
+GRANT SELECT, INSERT ON *.* TO 'readinsert'@'%';
+
+
 FLUSH PRIVILEGES;
