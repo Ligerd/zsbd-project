@@ -59,12 +59,12 @@ create table pilot(
 create table flight (
     flight_date date not null,
     route_id int not null,
-    -- board int,
+    plane int,
     pilot int,
     primary key (flight_date),
     foreign key (pilot) references pilot (pilot_id),
-    foreign key (route_id) references airRoute (airRoute_id)
-    -- foreign key (board) references board (board_id)
+    foreign key (route_id) references airRoute (airRoute_id),
+    foreign key (plane) references plane (plane_id)
 );
 
 
@@ -73,6 +73,7 @@ create table passenger (
     passenger_id int not null auto_increment,
     passenger_name varchar(15),
     passenger_surname varchar(15),
+    passport varchar(15) not null unique,
     primary key (passenger_id)  
 );
 

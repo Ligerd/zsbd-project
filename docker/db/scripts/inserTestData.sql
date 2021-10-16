@@ -24,9 +24,9 @@ insert into plane(aircompany, model, number_of_seats, engine, board_number) valu
 -- insert into city(city_name) values("London");
 -- insert into city(city_name) values("Paris");
 
-insert into airport(city, airport_name) values("Barcelona", "Dubai International Airport");
-insert into airport(city, airport_name) values("Warsaw", "Barcelona-El Prat Airport");
-insert into airport(city, airport_name) values("Dubai", "Warsaw Chopin Airport");
+insert into airport(city, airport_name) values("Dubai", "Dubai International Airport");
+insert into airport(city, airport_name) values("Barcelona", "Barcelona-El Prat Airport");
+insert into airport(city, airport_name) values("Warsaw", "Warsaw Chopin Airport");
 insert into airport(city, airport_name) values("London", "London Heathrow Airport");
 insert into airport(city, airport_name) values("Paris", "Charles de Gaulle Airport");
 
@@ -44,18 +44,18 @@ insert into pilot(pilot_name,pilot_surname) values('Roderich','Bonnell');
 insert into pilot(pilot_name,pilot_surname) values('Hervey','Watkin');
 
 
-insert into flight(flight_date, route_id,  pilot) values('2021-01-23',1, 1);
-insert into flight(flight_date, route_id,  pilot) values('2021-04-27',2, 2);
-insert into flight(flight_date, route_id, pilot) values('2021-07-13',3,  3);
-insert into flight(flight_date, route_id,  pilot) values('2021-03-03',4, 4);
-insert into flight(flight_date, route_id,  pilot) values('2021-06-21',5, 5);
+insert into flight(flight_date, route_id, plane, pilot) values('2021-01-23',1, 2, 1);
+insert into flight(flight_date, route_id, plane, pilot) values('2021-04-27',2, 1, 2);
+insert into flight(flight_date, route_id, plane, pilot) values('2021-07-13',3, 4,  3);
+insert into flight(flight_date, route_id, plane, pilot) values('2021-03-03',4, 5, 4);
+insert into flight(flight_date, route_id, plane, pilot) values('2021-06-21',5, 3, 5);
 
-insert into passenger(passenger_name,passenger_surname) values('Lewie','Hearnes');
-insert into passenger(passenger_name,passenger_surname) values('Wadsworth','Conring');
-insert into passenger(passenger_name,passenger_surname) values('Lanae','Mousdall');
-insert into passenger(passenger_name,passenger_surname) values('Willamina','Noods');
-insert into passenger(passenger_name,passenger_surname) values('Miles','Grafhom');
-insert into passenger(passenger_name,passenger_surname) values('Gussie','Napleton');
+insert into passenger(passenger_name,passenger_surname, passport) values('Lewie','Hearnes',"2G4WD58236");
+insert into passenger(passenger_name,passenger_surname, passport) values('Wadsworth','Conring',"1YVHZ8BA9A");
+insert into passenger(passenger_name,passenger_surname, passport) values('Lanae','Mousdall',"JH4CU2E60A");
+insert into passenger(passenger_name,passenger_surname, passport) values('Willamina','Noods',"WBASP2C55C");
+insert into passenger(passenger_name,passenger_surname, passport) values('Miles','Grafhom',"WAUKF78P49");
+insert into passenger(passenger_name,passenger_surname, passport) values('Gussie','Napleton',"5YMKT6C56F");
 
 -- insert into timesheet(airport_id,airRoute_id,departure_time, arrival_time) values(1,1,"12:15","15:35")-- ;
 -- insert into timesheet(airport_id,airRoute_id,departure_time, arrival_time) values(4,3,"12:35","15:35");
@@ -77,6 +77,8 @@ insert into tariff(airRoute_id,cost) values(4,80);
 insert into tariff(airRoute_id,cost) values(5,100);
 
 insert into ticket(passenger, tariff, flight_date) values(1,1,'2021-01-23');
+insert into ticket(passenger, tariff, flight_date) values(2,1,'2021-01-23');
+insert into ticket(passenger, tariff, flight_date) values(3,1,'2021-01-23');
 insert into ticket(passenger, tariff, flight_date) values(2,2,'2021-04-27');
 insert into ticket(passenger, tariff, flight_date) values(3,3,'2021-07-13');
 insert into ticket(passenger, tariff, flight_date) values(4,4,'2021-03-03');
@@ -89,7 +91,25 @@ GRANT SELECT ON *.* TO 'readonly'@'%';
 FLUSH PRIVILEGES;
 
 CREATE USER 'readinsert'@'%' IDENTIFIED BY 'readinsert';
-GRANT SELECT, INSERT ON *.* TO 'readinsert'@'%';
+GRANT SELECT, INSERT, UPDATE ON *.* TO 'readinsert'@'%';
 
 
 FLUSH PRIVILEGES;
+
+
+-- SELECT passenger.passenger_name, passenger.passenger_surname, ticket.flight_date, depart.airport_name as depart, arrival.airport_name as arrivals 
+-- FROM airlines.passenger 
+-- join ticket on passenger.passenger_id = ticket.passenger 
+-- join flight on ticket.flight_date = flight.flight_date 
+-- join airRoute on flight.route_id = airRoute.airRoute_id
+-- join airport as arrival on airRoute.arrivals_airport = arrival.airport_id
+-- join airport as depart on  airRoute.departures_airport = depart.airport_id
+-- where passenger.passenger_name="Lewie" and passenger.passenger_surname="Hearnes";
+
+-- select airport.city as departures_city, flight.flight_date, passenger.passenger_name, passenger.passenger_surname from airport
+-- join airRoute on airRoute.departures_airport = airport.airport_id
+-- join flight on airRoute.airRoute_id = flight.route_id
+-- join ticket on flight.flight_date = ticket.flight_date
+-- join passenger on passenger.passenger_id = ticket.passenger
+-- where airport.city = "Dubai"
+-- order by passenger.passenger_name;
