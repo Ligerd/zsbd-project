@@ -1,9 +1,9 @@
 use airlines;
 
-insert into aircompany(nip, aircompany_name) values(4854559,"Meemm");
-insert into aircompany(nip, aircompany_name) values(1975148,"Demivee");
-insert into aircompany(nip, aircompany_name) values(5335416,"Abata");
-insert into aircompany(nip, aircompany_name) values(3316880,"Kwilith");
+insert into aircompany(nip, aircompany_name) values(4854559,"Ryanair");
+insert into aircompany(nip, aircompany_name) values(1975148,"Flydubai");
+insert into aircompany(nip, aircompany_name) values(5335416,"Wizzair");
+insert into aircompany(nip, aircompany_name) values(3316880,"Vueling");
 insert into aircompany(nip, aircompany_name) values(4438128,"Fatz");
 
 insert into plane(aircompany, model, number_of_seats, engine, board_number) values(1, "Boeing 737-300",96, 'Turboprop','4USBU53537C2');
@@ -12,63 +12,38 @@ insert into plane(aircompany, model, number_of_seats, engine, board_number) valu
 insert into plane(aircompany, model, number_of_seats, engine, board_number) values(4, "Cessna Citation CJ3",51,"Turbofan", 'JA32U2FU8FU3');
 insert into plane(aircompany, model, number_of_seats, engine, board_number) values(5, "Canadair Challenger",88,"Turboshaft", '2C4RDGBG8FR9');
 
--- insert into board(plane_id, aircompany_id, board_number) values(1,2,'4USBU53537C2');
--- insert into board(plane_id, aircompany_id, board_number) values(2,3,'JTDKN3DU9AQ1');
--- insert into board(plane_id, aircompany_id, board_number) values(2,4,'1N4AL2APXAW1');
--- insert into board(plane_id, aircompany_id, board_number) values(3,5,'JA32U2FU8FU3');
--- insert into board(plane_id, aircompany_id, board_number) values(4,5,'2C4RDGBG8FR9');
-
--- insert into city(city_name) values("Barcelona");
--- insert into city(city_name) values("Warsaw");
--- insert into city(city_name) values("Dubai");
--- insert into city(city_name) values("London");
--- insert into city(city_name) values("Paris");
-
 insert into airport(city, airport_name) values("Dubai", "Dubai International Airport");
 insert into airport(city, airport_name) values("Barcelona", "Barcelona-El Prat Airport");
 insert into airport(city, airport_name) values("Warsaw", "Warsaw Chopin Airport");
 insert into airport(city, airport_name) values("London", "London Heathrow Airport");
 insert into airport(city, airport_name) values("Paris", "Charles de Gaulle Airport");
 
-insert into airRoute( plane_id, departures_airport, arrivals_airport, airline_name) values( 1, 1, 2, "Ryanair");
-insert into airRoute( plane_id, departures_airport, arrivals_airport, airline_name) values( 4, 3, 5, "Flydubai");
-insert into airRoute( plane_id, departures_airport, arrivals_airport, airline_name) values( 2, 4, 2, "Wizzair");
-insert into airRoute( plane_id, departures_airport, arrivals_airport, airline_name) values( 5, 1, 5, "Vueling");
-insert into airRoute( plane_id, departures_airport, arrivals_airport, airline_name) values( 1, 2, 4, "Ryanair");
+insert into airRoute( plane_id, departures_airport, arrivals_airport, aircompany) values( 1, 1, 2, 2);
+insert into airRoute( plane_id, departures_airport, arrivals_airport, aircompany) values( 4, 3, 5, 1);
+insert into airRoute( plane_id, departures_airport, arrivals_airport, aircompany) values( 2, 4, 2, 3);
+insert into airRoute( plane_id, departures_airport, arrivals_airport, aircompany) values( 5, 1, 5, 2);
+insert into airRoute( plane_id, departures_airport, arrivals_airport, aircompany) values( 1, 2, 4, 1);
 
-insert into pilot(pilot_name,pilot_surname) values('Nicolis','Tiddeman');
-insert into pilot(pilot_name,pilot_surname) values('Rozelle','Dimbleby');
-insert into pilot(pilot_name,pilot_surname) values('Fran','Shulem');
-insert into pilot(pilot_name,pilot_surname) values('Raddy','McLardie');
-insert into pilot(pilot_name,pilot_surname) values('Roderich','Bonnell');
-insert into pilot(pilot_name,pilot_surname) values('Hervey','Watkin');
-
-
-insert into flight(flight_date, route_id, plane, pilot) values('2021-01-23',1, 2, 1);
-insert into flight(flight_date, route_id, plane, pilot) values('2021-04-27',2, 1, 2);
-insert into flight(flight_date, route_id, plane, pilot) values('2021-07-13',3, 4,  3);
-insert into flight(flight_date, route_id, plane, pilot) values('2021-03-03',4, 5, 4);
-insert into flight(flight_date, route_id, plane, pilot) values('2021-06-21',5, 3, 5);
-
-insert into passenger(passenger_name,passenger_surname, passport) values('Lewie','Hearnes',"2G4WD58236");
-insert into passenger(passenger_name,passenger_surname, passport) values('Wadsworth','Conring',"1YVHZ8BA9A");
-insert into passenger(passenger_name,passenger_surname, passport) values('Lanae','Mousdall',"JH4CU2E60A");
-insert into passenger(passenger_name,passenger_surname, passport) values('Willamina','Noods',"WBASP2C55C");
-insert into passenger(passenger_name,passenger_surname, passport) values('Miles','Grafhom',"WAUKF78P49");
-insert into passenger(passenger_name,passenger_surname, passport) values('Gussie','Napleton',"5YMKT6C56F");
-
--- insert into timesheet(airport_id,airRoute_id,departure_time, arrival_time) values(1,1,"12:15","15:35")-- ;
--- insert into timesheet(airport_id,airRoute_id,departure_time, arrival_time) values(4,3,"12:35","15:35");
--- insert into timesheet(airport_id,airRoute_id,departure_time, arrival_time) values(1,4,"13:35","15:35");
--- insert into timesheet(airport_id,airRoute_id,departure_time, arrival_time) values(3,2,"16:15","21:35");
--- insert into timesheet(airport_id,airRoute_id,departure_time, arrival_time) values(2,5,"07:25","15:35");
+insert into pilot(name,surname) values('Nicolis','Tiddeman');
+insert into pilot(name,surname) values('Rozelle','Dimbleby');
+insert into pilot(name,surname) values('Fran','Shulem');
+insert into pilot(name,surname) values('Raddy','McLardie');
+insert into pilot(name,surname) values('Roderich','Bonnell');
+insert into pilot(name,surname) values('Hervey','Watkin');
 
 
-insert into timesheet(airRoute_id,departure_time, arrival_time) values(1,"12:15","15:35");
-insert into timesheet(airRoute_id,departure_time, arrival_time) values(3,"12:35","15:35");
-insert into timesheet(airRoute_id,departure_time, arrival_time) values(4,"13:35","15:35");
-insert into timesheet(airRoute_id,departure_time, arrival_time) values(2,"16:15","21:35");
-insert into timesheet(airRoute_id,departure_time, arrival_time) values(5,"07:25","15:35");
+insert into flight( route_id, plane, pilot, departure, arrival) values(1, 2, 1, '2021-01-23 12:45:56', '2021-01-23 15:45:56');
+insert into flight( route_id, plane, pilot, departure, arrival) values(2, 1, 2, '2021-02-23 13:45:56', '2021-02-23 17:45:56');
+insert into flight( route_id, plane, pilot, departure, arrival) values(3, 4, 3, '2021-05-23 12:45:56', '2021-05-23 18:45:56');
+insert into flight( route_id, plane, pilot, departure, arrival) values(4, 5, 4, '2021-07-23 07:45:56', '2021-07-23 11:45:56');
+insert into flight( route_id, plane, pilot, departure, arrival) values(5, 3, 5, '2021-08-23 06:45:56', '2021-08-23 12:45:56');
+
+insert into passenger(name,surname, passport) values('Lewie','Hearnes',"2G4WD58236");
+insert into passenger(name,surname, passport) values('Wadsworth','Conring',"1YVHZ8BA9A");
+insert into passenger(name,surname, passport) values('Lanae','Mousdall',"JH4CU2E60A");
+insert into passenger(name,surname, passport) values('Willamina','Noods',"WBASP2C55C");
+insert into passenger(name,surname, passport) values('Miles','Grafhom',"WAUKF78P49");
+insert into passenger(name,surname, passport) values('Gussie','Napleton',"5YMKT6C56F");
 
 insert into tariff(airRoute_id,cost) values(1,20);
 insert into tariff(airRoute_id,cost) values(2,700);
@@ -76,13 +51,13 @@ insert into tariff(airRoute_id,cost) values(3,300);
 insert into tariff(airRoute_id,cost) values(4,80);
 insert into tariff(airRoute_id,cost) values(5,100);
 
-insert into ticket(passenger, tariff, flight_date) values(1,1,'2021-01-23');
-insert into ticket(passenger, tariff, flight_date) values(2,1,'2021-01-23');
-insert into ticket(passenger, tariff, flight_date) values(3,1,'2021-01-23');
-insert into ticket(passenger, tariff, flight_date) values(2,2,'2021-04-27');
-insert into ticket(passenger, tariff, flight_date) values(3,3,'2021-07-13');
-insert into ticket(passenger, tariff, flight_date) values(4,4,'2021-03-03');
-insert into ticket(passenger, tariff, flight_date) values(5,5,'2021-06-21');
+insert into ticket(passenger, tariff, flight) values(1,1,1);
+insert into ticket(passenger, tariff, flight) values(2,1,1);
+insert into ticket(passenger, tariff, flight) values(3,1,1);
+insert into ticket(passenger, tariff, flight) values(2,2,2);
+insert into ticket(passenger, tariff, flight) values(3,3,3);
+insert into ticket(passenger, tariff, flight) values(4,4,4);
+insert into ticket(passenger, tariff, flight) values(5,5,5);
 
 
 CREATE USER 'readonly'@'%' IDENTIFIED BY 'readonly';
