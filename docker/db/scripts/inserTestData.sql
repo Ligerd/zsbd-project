@@ -32,11 +32,11 @@ insert into pilot(name,surname) values('Roderich','Bonnell');
 insert into pilot(name,surname) values('Hervey','Watkin');
 
 
-insert into flight( route_id, plane, pilot, departure, arrival) values(1, 2, 1, '2021-01-23 12:45:56', '2021-01-23 15:45:56');
-insert into flight( route_id, plane, pilot, departure, arrival) values(2, 1, 2, '2021-02-23 13:45:56', '2021-02-23 17:45:56');
-insert into flight( route_id, plane, pilot, departure, arrival) values(3, 4, 3, '2021-05-23 12:45:56', '2021-05-23 18:45:56');
-insert into flight( route_id, plane, pilot, departure, arrival) values(4, 5, 4, '2021-07-23 07:45:56', '2021-07-23 11:45:56');
-insert into flight( route_id, plane, pilot, departure, arrival) values(5, 3, 5, '2021-08-23 06:45:56', '2021-08-23 12:45:56');
+insert into flight( route_id, plane, pilot, departure, arrival, flight_number) values(1, 2, 1, '2021-01-23 12:45:56', '2021-01-23 15:45:56', "1G6DT57V58");
+insert into flight( route_id, plane, pilot, departure, arrival, flight_number) values(2, 1, 2, '2021-02-23 13:45:56', '2021-02-23 17:45:56', "3VWKZ7AJ1B");
+insert into flight( route_id, plane, pilot, departure, arrival, flight_number) values(3, 4, 3, '2021-05-23 12:45:56', '2021-05-23 18:45:56', "WUAUUAFGXB");
+insert into flight( route_id, plane, pilot, departure, arrival, flight_number) values(4, 5, 4, '2021-07-23 07:45:56', '2021-07-23 11:45:56', "WBAYM1C5XD");
+insert into flight( route_id, plane, pilot, departure, arrival, flight_number) values(5, 3, 5, '2021-08-23 06:45:56', '2021-08-23 12:45:56', "JH4CL96938");
 
 insert into passenger(name,surname, passport) values('Lewie','Hearnes',"2G4WD58236");
 insert into passenger(name,surname, passport) values('Wadsworth','Conring',"1YVHZ8BA9A");
@@ -88,3 +88,155 @@ FLUSH PRIVILEGES;
 -- join passenger on passenger.passenger_id = ticket.passenger
 -- where airport.city = "Dubai"
 -- order by passenger.passenger_name;
+
+
+
+DELIMITER //
+
+CREATE PROCEDURE getraiseByNameAndSurname(
+	IN name VARCHAR(50), in surname varchar(50)
+)
+BEGIN
+	SELECT passenger.name, passenger.surname, depart.airport_name as depart, arrival.airport_name as arrivals,
+    flight.departure as departure_time, flight.arrival as arrival_time
+	FROM airlines.passenger 
+	join ticket on passenger.passenger_id = ticket.passenger 
+	join flight on ticket.flight = flight.flight_id
+	join airRoute on flight.route_id = airRoute.airRoute_id
+	join airport as arrival on airRoute.arrivals_airport = arrival.airport_id
+	join airport as depart on  airRoute.departures_airport = depart.airport_id
+	where passenger.name=name and passenger.surname=surname;
+END //
+
+DELIMITER ;
+
+
+DELIMITER //
+
+CREATE PROCEDURE createNewRoute(
+	IN departureAirportName VARCHAR(50), in arrivalAirportName varchar(50)
+)
+BEGIN
+	
+	DECLARE errno INT;
+	
+    DECLARE depart integer;
+	DECLARE arrival integer;
+	
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+    GET CURRENT DIAGNOSTICS CONDITION 1 errno = MYSQL_ERRNO;
+    SELECT errno AS MYSQL_ERROR;
+    ROLLBACK;
+    END;
+    
+	START TRANSACTION;
+    
+    select airport_id into depart from airport where airport_name = departureAirportName;
+	select airport_id into arrival from airport where airport_name = arrivalAirportName;
+
+
+	IF(depart IS NULL) THEN
+        insert into airport (airport_name) values (departureAirportName);
+        select airport_id into depart from airport where airport_name = departureAirportName;
+    END IF;
+	
+    IF(arrival IS NULL) THEN
+        insert into airport (airport_name) values (arrivalAirportName);
+        select airport_id into arrival from airport where airport_name = arrivalAirportName;
+    END IF;
+    
+    insert into airRoute(departures_airport, arrivals_airport) values (depart,arrival);
+    
+    COMMIT WORK;
+END //
+
+DELIMITER ;
+
+
+-- CALL createNewRoute("Lewie", "Hearnes"); 
+
+-- CALL getraiseByNameAndSurname("Lewie", "Hearnes"); 
+
+
+
+
+-- funkcje 
+DELIMITER //
+CREATE FUNCTION flightLenght ( start_city varchar(15), end_city varchar(15) )
+RETURNS varchar(255)
+DETERMINISTIC
+BEGIN
+
+   DECLARE depart datetime;
+   DECLARE arrival datetime;
+   
+	select  flight.departure into depart from flight
+	join airRoute on flight.route_id = airRoute.airRoute_id
+	join airport as arrival on airRoute.arrivals_airport = arrival.airport_id
+	join airport as depart on  airRoute.departures_airport = depart.airport_id
+	where depart.city = start_city and arrival.city=end_city;
+    
+	select  flight.arrival into arrival from flight
+	join airRoute on flight.route_id = airRoute.airRoute_id
+	join airport as arrival on airRoute.arrivals_airport = arrival.airport_id
+	join airport as depart on  airRoute.departures_airport = depart.airport_id
+	where depart.city = start_city and arrival.city=end_city;
+    
+
+   RETURN TIMEDIFF(arrival,depart);
+
+END; //
+
+DELIMITER ;
+
+-- SELECT flightLenght ("Dubai","Barcelona");
+
+-- DROP FUNCTION CalcIncome;
+
+-- 
+
+
+-- Widoki
+
+CREATE VIEW allFlightsWithTime AS
+select depart.city as depart, arrival.city as arrivals, tariff.cost as price, flight.departure as timeofdeparture, 
+flight.arrival as timeofarrival, aircompany.aircompany_name as transporter
+from flight
+join airRoute on flight.route_id = airRoute.airRoute_id
+join tariff on tariff.airRoute_id = airRoute.airRoute_id
+join aircompany on aircompany.aircompany_id = airRoute.aircompany
+join airport as arrival on airRoute.arrivals_airport = arrival.airport_id
+join airport as depart on  airRoute.departures_airport = depart.airport_id
+order by (depart.city);
+
+-- SELECT * FROM allFlightsWithTime;
+
+CREATE VIEW passengersWithDestinations AS
+select passenger.name, passenger.surname, passenger.passport, depart.city as depart, arrival.city as arrivals from passenger
+join ticket on ticket.passenger = passenger_id
+join tariff on tariff.tariff_id = ticket.tariff
+join airRoute on airRoute.airRoute_id = tariff.airRoute_id
+join airport as arrival on airRoute.arrivals_airport = arrival.airport_id
+join airport as depart on  airRoute.departures_airport = depart.airport_id
+order by passenger.surname;
+
+-- select * from passengersWithDestinations;
+
+
+
+-- trigger 
+DELIMITER $$
+create trigger airlines before insert on passenger for each row
+begin 
+	DECLARE rowcount INT;
+	SELECT COUNT(*) 
+	INTO rowcount
+    FROM passenger
+    where passenger.passport = new.passport;
+	IF rowcount > 0 THEN
+        SIGNAL sqlstate '45001' set message_text = "Passport must be unique. This passenger alredy in database";
+    END IF; 
+END $$
+
+DELIMITER ;

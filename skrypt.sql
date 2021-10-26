@@ -85,15 +85,15 @@ END //
 DELIMITER ;
 
 
-CALL createNewRoute("Lewie", "Hearnes"); 
+-- CALL createNewRoute("Lewie", "Hearnes"); 
 
-CALL getraiseByNameAndSurname("Lewie", "Hearnes"); 
+-- CALL getraiseByNameAndSurname("Lewie", "Hearnes"); 
 
 
-DELIMITER //
+
 
 -- funkcje 
-
+DELIMITER //
 CREATE FUNCTION flightLenght ( start_city varchar(15), end_city varchar(15) )
 RETURNS varchar(255)
 DETERMINISTIC
@@ -122,7 +122,10 @@ END; //
 DELIMITER ;
 
 SELECT flightLenght ("Dubai","Barcelona");
-DROP FUNCTION CalcIncome;
+
+-- DROP FUNCTION CalcIncome; 
+
+
 
 
 -- Widoki
@@ -135,9 +138,10 @@ join airRoute on flight.route_id = airRoute.airRoute_id
 join tariff on tariff.airRoute_id = airRoute.airRoute_id
 join aircompany on aircompany.aircompany_id = airRoute.aircompany
 join airport as arrival on airRoute.arrivals_airport = arrival.airport_id
-join airport as depart on  airRoute.departures_airport = depart.airport_id;
+join airport as depart on  airRoute.departures_airport = depart.airport_id
+order by (depart.city);
 
-SELECT * FROM allFlightsWithTime;
+-- SELECT * FROM allFlightsWithTime;
 
 CREATE VIEW passengersWithDestinations AS
 select passenger.name, passenger.surname, passenger.passport, depart.city as depart, arrival.city as arrivals from passenger
@@ -145,7 +149,90 @@ join ticket on ticket.passenger = passenger_id
 join tariff on tariff.tariff_id = ticket.tariff
 join airRoute on airRoute.airRoute_id = tariff.airRoute_id
 join airport as arrival on airRoute.arrivals_airport = arrival.airport_id
-join airport as depart on  airRoute.departures_airport = depart.airport_id;
+join airport as depart on  airRoute.departures_airport = depart.airport_id
+order by passenger.surname;
 
-select * from passengersWithDestinations;
+-- select * from passengersWithDestinations;
 
+
+
+-- trigger 
+DELIMITER $$
+create trigger airlines before insert on passenger for each row
+begin 
+	DECLARE rowcount INT;
+	SELECT COUNT(*) 
+	INTO rowcount
+    FROM passenger
+    where passenger.passport = new.passport;
+	IF rowcount > 0 THEN
+        SIGNAL sqlstate '45001' set message_text = "Passport must be unique. This passenger alredy in database";
+    END IF; 
+END $$
+
+DELIMITER ;
+
+-- insert into passenger(name,surname, passport) values('Lewie','Hearnes',"2G3WD58236");
+
+-- index
+ 
+CREATE unique INDEX Ix_passport_surname_name ON passenger(passport, surname, name);
+
+CREATE INDEX Ix_city ON airport(city);
+
+CREATE unique INDEX Ix_depart ON flight(departure);
+
+CREATE INDEX Ix_flight_number ON flight(flight_number);
+
+drop index Ix_passport_surname_name on passenger;
+
+SHOW INDEX FROM passenger;
+
+
+--
+
+SET GLOBAL event_scheduler = ON; 
+SET @@GLOBAL.event_scheduler = ON; 
+SET GLOBAL event_scheduler = 1; 
+SET @@GLOBAL.event_scheduler = 1;
+
+create table statOfFly (
+    fly_date datetime,
+    flight_number varchar(15),
+    number_passanger integer
+);
+
+
+delimiter |
+  CREATE EVENT e_daily_flight_stat
+     ON SCHEDULE
+       EVERY 1 DAY
+     COMMENT 'Saves total number of sessions then clears the table each day'
+     DO
+       BEGIN
+         INSERT INTO statOfFly (fly_date, flight_number, number_passanger) 
+         select CURRENT_DATE as fly_date, flight.flight_number as flight_number, count(*) as number_pass from passenger 
+		join ticket on ticket.passenger = passenger_id
+		join flight on ticket.flight = flight.flight_id
+		WHERE departure > DATE_SUB(NOW(), INTERVAL 24 HOUR)
+			AND departure <= NOW()
+		group by flight.flight_number;
+       END |
+delimiter ;
+
+select count(*) as number_pass, flight.flight_number from passenger 
+join ticket on ticket.passenger = passenger_id
+join flight on ticket.flight = flight.flight_id
+WHERE departure > DATE_SUB(NOW(), INTERVAL 24 HOUR)
+  AND departure <= NOW()
+group by flight.flight_number;
+  
+  
+--   SELECT CURRENT_DATE;
+
+insert into flight( route_id, plane, pilot, departure, arrival, flight_number) values(5, 3, 5, '2021-10-26 06:45:56', '2021-10-26 12:45:56', "JH4CL96938");
+insert into ticket(passenger, tariff, flight) values(1,1,6);
+SELECT *
+FROM flight
+WHERE departure > DATE_SUB(NOW(), INTERVAL 24 HOUR)
+  AND departure <= NOW()

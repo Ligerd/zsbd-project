@@ -55,6 +55,7 @@ create table flight (
     pilot int,
     departure datetime,
     arrival datetime,
+    flight_number varchar(15),
     primary key (flight_id),
     foreign key (pilot) references pilot (pilot_id),
     foreign key (route_id) references airRoute (airRoute_id),
