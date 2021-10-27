@@ -7,8 +7,10 @@ services:
       dockerfile: ./Dockerfile
     ports:
       - "3317:3306"
+    command: --secure-file-priv=/usr/local/raport
     environment:
         MYSQL_ROOT_PASSWORD: "root"
+        # secure-file-priv: "/usr/local"
     volumes:
       - airlines-db-volume:/var/lib/mysql
 volumes:
