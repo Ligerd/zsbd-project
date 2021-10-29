@@ -7,7 +7,7 @@ services:
       dockerfile: ./Dockerfile
     ports:
       - "3317:3306"
-    command: --secure-file-priv=/usr/local/raport
+    command: --secure-file-priv=/usr/local/reports
     environment:
         MYSQL_ROOT_PASSWORD: "root"
         # secure-file-priv: "/usr/local"

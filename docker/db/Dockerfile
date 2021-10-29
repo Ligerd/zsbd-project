@@ -15,8 +15,8 @@ COPY ./$INSTALL_DATA_SHELL $AUTO_RUN_DIR/
 
 RUN chmod a+x $AUTO_RUN_DIR/$INSTALL_DATA_SHELL
 
-RUN mkdir -p ${WORK_PATH}/raport 
-RUN chmod 777 ${WORK_PATH}/raport 
+RUN mkdir -p ${WORK_PATH}/reports 
+RUN chmod 777 ${WORK_PATH}/reports 
 
 EXPOSE 3307
 EXPOSE 3306

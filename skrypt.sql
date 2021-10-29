@@ -141,7 +141,7 @@ join airport as arrival on airRoute.arrivals_airport = arrival.airport_id
 join airport as depart on  airRoute.departures_airport = depart.airport_id
 order by (depart.city);
 
--- SELECT * FROM allFlightsWithTime;
+SELECT * FROM allFlightsWithTime;
 
 CREATE VIEW passengersWithDestinations AS
 select passenger.name, passenger.surname, passenger.passport, depart.city as depart, arrival.city as arrivals from passenger
@@ -152,7 +152,7 @@ join airport as arrival on airRoute.arrivals_airport = arrival.airport_id
 join airport as depart on  airRoute.departures_airport = depart.airport_id
 order by passenger.surname;
 
--- select * from passengersWithDestinations;
+select * from passengersWithDestinations;
 
 
 
@@ -196,27 +196,15 @@ SET @@GLOBAL.event_scheduler = ON;
 SET GLOBAL event_scheduler = 1; 
 SET @@GLOBAL.event_scheduler = 1;
 
-create table statOfFly (
-    fly_date datetime,
-    flight_number varchar(15),
-    number_passanger integer
-);
-
-
 delimiter |
   CREATE EVENT e_daily_flight_stat
      ON SCHEDULE
        EVERY 1 MINUTE
      COMMENT 'Saves total number of sessions then clears the table each day'
      DO
-       
-		-- select CURRENT_DATE as fly_date, flight.flight_number as flight_number, count(*) as number_pass from passenger 
--- 		join ticket on ticket.passenger = passenger_id
--- 		join flight on ticket.flight = flight.flight_id
--- 		WHERE departure > DATE_SUB(NOW(), INTERVAL 24 HOUR)
--- 			AND departure <= NOW()
--- 		group by flight.flight_number        
-	SET @TS = DATE_FORMAT(NOW(),'_%Y_%m_%d_%H_%i_%ss');
+     begin
+     
+	SET @TS = DATE_FORMAT(NOW(),'_%Y_%m_%d_%H_%i_%s');
 	SET @FOLDER = '/usr/local/raport/';
 	SET @PREFIX = 'report';
 	SET @EXT    = '.csv';
@@ -251,12 +239,14 @@ FROM flight
 WHERE departure > DATE_SUB(NOW(), INTERVAL 24 HOUR)
   AND departure <= NOW();
 -- select CURRENT_DATE as fly_date, flight.flight_number as flight_number, count(*) as number_pass from passenger join ticket on ticket.passenger = passenger_id join flight on ticket.flight = flight.flight_id WHERE departure > DATE_SUB(NOW(), INTERVAL 24 HOUR) AND departure <= NOW() group by flight.flight_number 
-TABLE tableName 
-INTO OUTFILE 'path/outputFile.csv'
-FIELDS TERMINATED BY ','
-OPTIONALLY ENCLOSED BY '"'
-ESCAPED BY ''
-LINES TERMINATED BY 'n';
+
+
+		-- select CURRENT_DATE as fly_date, flight.flight_number as flight_number, count(*) as number_pass from passenger 
+-- 		join ticket on ticket.passenger = passenger_id
+-- 		join flight on ticket.flight = flight.flight_id
+-- 		WHERE departure > DATE_SUB(NOW(), INTERVAL 24 HOUR)
+-- 			AND departure <= NOW()
+-- 		group by flight.flight_number 
 
 
 SET @TS = DATE_FORMAT(NOW(),'_%Y_%m_%d_%H_%i_%s');
@@ -272,3 +262,11 @@ ESCAPED BY '\"'",
 
 PREPARE statement FROM @CMD;
 EXECUTE statement;
+
+
+use airlines;
+insert into flight( route_id, plane, pilot, departure, arrival, flight_number) values(1, 2, 1, '2021-10-29 12:45:56', '2021-10-29 15:45:56', "1G6D357V58");
+insert into flight( route_id, plane, pilot, departure, arrival, flight_number) values(2, 3, 3, '2021-10-29 12:43:56', '2021-10-29 12:45:56', "1G6DT57V53");
+insert into ticket(passenger, tariff, flight) values(1,1,6);
+insert into ticket(passenger, tariff, flight) values(2,1,6);
+insert into ticket(passenger, tariff, flight) values(4,1,7);
