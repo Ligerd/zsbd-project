@@ -38,9 +38,7 @@ BEGIN
     SELECT errno AS MYSQL_ERROR;
     ROLLBACK;
     END;
-    
-	START TRANSACTION;
-    
+
     select airport_id into depart from airport where airport_name = departureAirportName;
 	select airport_id into arrival from airport where airport_name = arrivalAirportName;
 

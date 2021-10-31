@@ -85,9 +85,9 @@ END //
 DELIMITER ;
 
 
--- CALL createNewRoute("Lewie", "Hearnes"); 
+CALL createNewRoute("Lewie", null);  
 
--- CALL getraiseByNameAndSurname("Lewie", "Hearnes"); 
+CALL getraiseByNameAndSurname("Lewie", "Hearnes");  
 
 
 
@@ -121,11 +121,43 @@ END; //
 
 DELIMITER ;
 
-SELECT flightLenght ("Dubai","Barcelona");
+SELECT flightLenght ("Dubdai","Barcelona");
 
--- DROP FUNCTION CalcIncome; 
+DROP FUNCTION flightLenght; 
 
+use airlines;
 
+-- funkcje 
+DELIMITER //
+CREATE FUNCTION flightLenght ( start_city varchar(30), end_city varchar(30) )
+RETURNS varchar(255)
+DETERMINISTIC
+BEGIN
+
+   DECLARE depart datetime;
+   DECLARE arrival datetime;
+   
+	select  flight.departure into depart from flight
+	join airRoute on flight.route_id = airRoute.airRoute_id
+	join airport as arrival on airRoute.arrivals_airport = arrival.airport_id
+	join airport as depart on  airRoute.departures_airport = depart.airport_id
+	where depart.city = start_city and arrival.city=end_city;
+    
+	select  flight.arrival into arrival from flight
+	join airRoute on flight.route_id = airRoute.airRoute_id
+	join airport as arrival on airRoute.arrivals_airport = arrival.airport_id
+	join airport as depart on  airRoute.departures_airport = depart.airport_id
+	where depart.city = start_city and arrival.city=end_city;
+	if (depart is not null and arrival is not null) then
+		RETURN TIMEDIFF(arrival,depart);
+	else
+		SIGNAL sqlstate '45001' set message_text = "Selected citys is not exist";
+	end if;
+   RETURN TIMEDIFF(arrival,depart);
+
+END; //
+
+DELIMITER ;
 
 
 -- Widoki
@@ -270,3 +302,5 @@ insert into flight( route_id, plane, pilot, departure, arrival, flight_number) v
 insert into ticket(passenger, tariff, flight) values(1,1,6);
 insert into ticket(passenger, tariff, flight) values(2,1,6);
 insert into ticket(passenger, tariff, flight) values(4,1,7);
+
+insert into passenger(name,surname, passport) values('Lewie','Hearnes',"2G4WD58236");

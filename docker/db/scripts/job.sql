@@ -16,8 +16,8 @@ delimiter |
 	SET @FOLDER = '/usr/local/reports/';
 	SET @PREFIX = 'report';
 	SET @EXT    = '.csv';
-	set @QUARY = "select CURRENT_DATE as fly_date, flight.flight_number as flight_number, count(*) as number_pass from passenger join ticket on ticket.passenger = passenger_id join flight on ticket.flight = flight.flight_id WHERE departure > DATE_SUB(NOW(), INTERVAL 24 HOUR) AND departure <= NOW() group by flight.flight_number INTO OUTFILE '";
-	SET @CMD = CONCAT(@QUARY,@FOLDER,@PREFIX,@TS,@EXT,
+	set @QUERY = "select CURRENT_DATE as fly_date, flight.flight_number as flight_number, count(*) as number_pass from passenger join ticket on ticket.passenger = passenger_id join flight on ticket.flight = flight.flight_id WHERE departure > DATE_SUB(NOW(), INTERVAL 24 HOUR) AND departure <= NOW() group by flight.flight_number INTO OUTFILE '";
+	SET @CMD = CONCAT(@QUERY,@FOLDER,@PREFIX,@TS,@EXT,
 	"' FIELDS ENCLOSED BY '\"'",
 	" TERMINATED BY ','"," 
 	ESCAPED BY '\"'",

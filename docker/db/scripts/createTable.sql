@@ -23,7 +23,7 @@ create table plane(
 
 create table airport(
     airport_id int not null auto_increment,
-    city varchar(15),
+    city varchar(30),
     airport_name varchar(50) not null,
     primary key (airport_id)
 );
@@ -64,8 +64,8 @@ create table flight (
 
 create table passenger (
     passenger_id int not null auto_increment,
-    name varchar(15),
-    surname varchar(15),
+    name varchar(30),
+    surname varchar(30),
     passport varchar(15) not null unique,
     primary key (passenger_id)  
 );
