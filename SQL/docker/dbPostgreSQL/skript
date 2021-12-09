@@ -1,0 +1,143 @@
+insert into airlines.aircompany(nip, aircompany_name) values(4438131,'bartekchuj');
+
+CREATE FUNCTION flightLenght ( start_city varchar, end_city varchar )
+RETURNS varchar
+language plpgsql
+as 
+$$
+DECLARE
+var_depart TIMESTAMP;
+var_arrival TIMESTAMP;
+begin
+	select  flight.departure into var_depart from airlines.flight
+	join airlines.airRoute on flight.route_id = airRoute.airRoute_id
+	join airlines.airport as arrival on airRoute.arrivals_airport = arrival.airport_id
+	join airlines.airport as depart on  airRoute.departures_airport = depart.airport_id
+	where depart.city = start_city and arrival.city=end_city;
+    
+	select  flight.arrival into var_arrival from airlines.flight
+	join airlines.airRoute on flight.route_id = airRoute.airRoute_id
+	join airlines.airport as arrival on airRoute.arrivals_airport = arrival.airport_id
+	join airlines.airport as depart on  airRoute.departures_airport = depart.airport_id
+	where depart.city = start_city and arrival.city=end_city;
+	
+	if (var_depart is not null and var_arrival is not null) then
+		RETURN DATE_PART('day', var_arrival::timestamp - var_depart::timestamp) * 24 + 
+              DATE_PART('hour', var_arrival::timestamp - var_depart::timestamp);
+	else
+		RAISE SQLSTATE '22012'  USING MESSAGE = 'Selected citys is not correct';
+-- 		SIGNAL sqlstate '45001' set message_text = 'Selected citys is not correct';
+	end if;
+	
+	RETURN DATE_PART('day', var_arrival::timestamp - var_depart::timestamp) * 24 + 
+              DATE_PART('hour', var_arrival::timestamp - var_depart::timestamp);
+	
+end;
+$$
+
+select flightLenght ('Dubai','Barcelona');
+
+drop function airlines.createNewRoute
+
+
+
+
+create FUNCTION airlines.createNewRoute(departureAirportName varchar, arrivalAirportName varchar
+)
+  returns void
+language plpgsql    
+as $$
+
+DECLARE 
+
+depart integer;
+arrival integer;
+begin
+	
+    select airport_id into depart from airlines.airport where airport_name = departureAirportName;
+	select airport_id into arrival from airlines.airport where airport_name = arrivalAirportName;
+    
+	IF(depart IS NULL) THEN
+        insert into airlines.airport (airport_name) values (departureAirportName);
+        select airport_id into depart from airlines.airport where airport_name = departureAirportName;
+    END IF;
+	
+    IF(arrival IS NULL) THEN
+        insert into airlines.airport (airport_name) values (arrivalAirportName);
+        select airport_id into arrival from airlines.airport where airport_name = arrivalAirportName;
+    END IF;
+    
+    insert into airlines.airRoute(departures_airport, arrivals_airport) values (depart,arrival);
+	
+end;
+$$
+
+select airlines.createNewRoute('Test1', 'Test2'); 
+
+CREATE FUNCTION airlines.getraiseByNameAndSurname(
+	var_name VARCHAR,  var_surname varchar
+)
+returns table (
+	name varchar,
+	surname varchar,
+	depart varchar,
+	arrivals varchar,
+	departure_time varchar,
+	arrival_time varchar
+)
+language plpgsql    
+as $$
+BEGIN
+return query SELECT passenger.name, passenger.surname, depart.airport_name as depart, arrival.airport_name as arrivals,
+    flight.departure as departure_time, flight.arrival as arrival_time 
+	FROM airlines.passenger 
+	join airlines.ticket on airlines.passenger.passenger_id = ticket.passenger 
+	join airlines.flight on airlines.ticket.flight = flight.flight_id
+	join airlines.airRoute on airlines.flight.route_id = airRoute.airRoute_id
+	join airlines.airport as arrival on airlines.airRoute.arrivals_airport = arrival.airport_id
+	join airlines.airport as depart on  airlines.airRoute.departures_airport = depart.airport_id
+	where passenger.name=var_name and passenger.surname=var_surname;
+END;
+$$
+
+drop function airlines.getraiseByNameAndSurname
+
+	
+select * from airlines.getraiseByNameAndSurname('Lewie', 'Hearnes');
+
+SELECT version(); 
+
+
+CREATE OR REPLACE FUNCTION triger_function_for_passenger()
+  RETURNS TRIGGER 
+  LANGUAGE PLPGSQL
+  AS
+$$
+declare 
+rowcount int;
+BEGIN
+
+	SELECT COUNT(*) 
+	INTO rowcount
+    FROM airlines.passenger
+    where passenger.passport = new.passport;
+	IF rowcount > 0 THEN
+		RAISE SQLSTATE '45001'  USING MESSAGE = 'Passport must be unique. This passenger alredy in database';
+    END IF; 
+	RETURN NEW;
+END;
+$$
+
+CREATE TRIGGER check_passport
+  BEFORE insert
+  ON airlines.passenger
+  FOR EACH ROW
+  EXECUTE PROCEDURE triger_function_for_passenger();
+insert into airlines.passenger(name,surname, passport) values('Lewie','Hearnes','2G3WD58236');
+
+alter table airlines.airport drop column airport_id;
+alter table airlines.airport add column airport_id SERIAL PRIMARY KEY;
+alter table airlines.airroute drop column airroute_id;
+alter table airlines.airroute add column airroute_id SERIAL PRIMARY KEY;
+select * from airlines.passenger;
+insert into airlines.passenger(name,surname, passport) values('Lewie','Hearnes','2G3WD58236');
