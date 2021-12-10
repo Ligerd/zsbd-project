@@ -1,0 +1,61 @@
+InsertDebat([
+    {
+        "debateRecord": {
+            "debateSections": [
+                {
+                    "debateSection": {
+                        "debateType": "test",
+                        "formats": {
+                            "pdf": null,
+                            "xml": {
+                                "uri": "https://data.oireachtas.ie/akn/ie/debateRecord/dail/2021-12-09/debate/mul@/dbsect_2.xml"
+                            }
+                        },
+                        "showAs": "TEST",
+                        "containsDebate": false,
+                        "parentDebateSection": null,
+                        "counts": {
+                            "speakerCount": 0,
+                            "speechCount": 0
+                        },
+                        "speakers": [],
+                        "debateSectionId": "dbsect_2",
+                        "bill": null,
+                        "uri": "https://data.oireachtas.ie/akn/ie/debateRecord/dail/2021-12-09/debate/dbsect_2"
+                    }
+                }
+            ],
+            "date": "2021-12-09",
+            "lastUpdated": "2021-12-09T14:30:21+00:00",
+            "debateType": "debate",
+            "formats": {
+                "pdf": null,
+                "xml": {
+                    "uri": "https://data.oireachtas.ie/akn/ie/debateRecord/dail/2021-12-09/debate/mul@/main.xml"
+                },
+                "writtens_pdf": null
+            },
+            "chamber": {
+                "showAs": "Dáil Éireann",
+                "uri": "https://data.oireachtas.ie/ie/oireachtas/def/house/dail"
+            },
+            "counts": {
+                "questionCount": 1,
+                "billCount": 0,
+                "divisionCount": 0,
+                "contributorCount": 1,
+                "debateSectionCount": 1
+            },
+            "house": {
+                "showAs": "33rd Dáil",
+                "chamberType": "house",
+                "committeeCode": "",
+                "houseCode": "dail",
+                "houseNo": "33",
+                "uri": "https://data.oireachtas.ie/ie/oireachtas/house/dail/33"
+            },
+            "uri": "https://data.oireachtas.ie/akn/ie/debateRecord/dail/2021-12-09/debate/main"
+        },
+        "contextDate": "2021-12-09"
+    }
+])
